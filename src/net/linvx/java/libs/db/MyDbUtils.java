@@ -15,6 +15,7 @@ import javax.naming.NamingException;
 
 import net.linvx.java.libs.enhance.BaseBean;
 import net.linvx.java.libs.enhance.MyReflectCache;
+import net.linvx.java.libs.utils.MyStringUtils;
 
 public abstract class MyDbUtils {
 	public static <T> T getOne(Connection conn, String sql) throws Exception {
@@ -62,13 +63,17 @@ public abstract class MyDbUtils {
 	 */
 	public static String genBO(Connection db, String table, String packageName, String className) {
 		StringBuffer sb = new StringBuffer();
+		StringBuffer sbmethod = new StringBuffer();
+		String fieldFormat = "\tprivate %s %s;\n";
+		String nmethodFormat = "\tpublic %s get%s() {\n\t\treturn %s;\n\t}\n\tpublic %s set%s(%s p) {\n\t\tthis.%s = p;\n\t\treturn this;\n\t}\n";
+		String bmethodFormat = "\tpublic %s is%s() {\n\t\treturn %s;\n\t}\n\tpublic %s set%s(%s p) {\n\t\tthis.%s = p;\n\t\treturn this;\n\t}\n";
 		sb.append("package "+packageName+";\n");
 		sb.append("\n");
-		sb.append("public class "+className+" {\n");
+		sb.append("public class "+className+" extends net.linvx.java.libs.enhance.BaseBean {\n");
 		String sql = "select * from " + table + " where 1=0";
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		try {
+		try { 
 			pstmt = db.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			java.sql.ResultSetMetaData rsmd = rs.getMetaData();
@@ -76,8 +81,18 @@ public abstract class MyDbUtils {
 				String colName = rsmd.getColumnName(i+1);
 //				String colType = rsmd.getColumnTypeName(i+1);
 				String colClass = rsmd.getColumnClassName(i+1);
-				sb.append("	public "+ colClass +" "+colName+";\n");
+				sb.append(String.format(fieldFormat, colClass, colName));
+				if (colClass.equals("java.lang.Boolean") || colClass.equals("boolean"))
+					sbmethod.append(String.format(bmethodFormat, colClass, MyStringUtils.upperFirstLetter(colName), colName, className, MyStringUtils.upperFirstLetter(colName), colClass, colName));
+				else
+					sbmethod.append(String.format(nmethodFormat, colClass, MyStringUtils.upperFirstLetter(colName), colName, className, MyStringUtils.upperFirstLetter(colName), colClass, colName));
+
+				//				sb.append("	private "+ colClass +" "+colName+";\n");
+//				sbmetod.append("	public "+colClass+ "get"+MyStringUtils.upperFirstLetter(colName) + "() {\n")
+//					.append("		return " + colName + ";");
 			}
+			sb.append("\n");
+			sb.append(sbmethod.toString());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -405,7 +420,7 @@ public abstract class MyDbUtils {
 			con.setMysqlDs("").setMysqlUrl("jdbc:mysql://127.0.0.1:3306/wx?generateSimpleParameterMetadata=true")
 				.setMysqlPassword("Mynormal12#").setMysqlUser("wxuser");
 			db = con.getMysqlConnection();
-			String a = MyDbUtils.genBO(db, "wx_user", "net.linvx.java.libs.test", "TestBo");
+			String a = MyDbUtils.genBO(db, "wx_received_msg", "net.linvx.java.wx.bo", "BoReceivedMsg");
 			System.out.println(a);
 //			c = MyDbUtils.getAll(db,
 //					"select count(*) as numCount, Cast(count(*) as char) as vc2Count from wx_official_account_info where numAccountId=?",

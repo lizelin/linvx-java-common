@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Created by lizelin on 16/2/5.
@@ -230,8 +231,13 @@ public class MyStringUtils {
 		return StringEscapeUtils.unescapeXml(str);
 	}
 	
+	public static String upperFirstLetter(String str) {
+		if (MyStringUtils.isEmpty(str))
+			return "";
+		return str.substring(0, 1).toUpperCase(Locale.getDefault()) + str.substring(1);
+	}
     public static void main(String[] args) {
-    	System.out.println(MyStringUtils.leftString("中国123", "UTF-8", 7)); // result: 中国1
+    	System.out.println(MyStringUtils.upperFirstLetter("a中国123")); // result: 中国1
     	
     }
 }
