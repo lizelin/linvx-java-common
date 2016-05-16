@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.naming.NamingException;
 
-import net.linvx.java.libs.enhance.BaseBean;
 import net.linvx.java.libs.enhance.MyReflectCache;
 import net.linvx.java.libs.utils.MyStringUtils;
 
@@ -52,9 +51,10 @@ public abstract class MyDbUtils {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * 生成BO
+	 * 
 	 * @param db
 	 * @param table
 	 * @param packageName
@@ -67,29 +67,32 @@ public abstract class MyDbUtils {
 		String fieldFormat = "\tprivate %s %s;\n";
 		String nmethodFormat = "\tpublic %s get%s() {\n\t\treturn %s;\n\t}\n\tpublic %s set%s(%s p) {\n\t\tthis.%s = p;\n\t\treturn this;\n\t}\n";
 		String bmethodFormat = "\tpublic %s is%s() {\n\t\treturn %s;\n\t}\n\tpublic %s set%s(%s p) {\n\t\tthis.%s = p;\n\t\treturn this;\n\t}\n";
-		sb.append("package "+packageName+";\n");
+		sb.append("package " + packageName + ";\n");
 		sb.append("\n");
-		sb.append("public class "+className+" extends net.linvx.java.libs.enhance.BaseBean {\n");
+		sb.append("public class " + className + " extends net.linvx.java.libs.enhance.BaseBean {\n");
 		String sql = "select * from " + table + " where 1=0";
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		try { 
+		try {
 			pstmt = db.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-			for (int i=0; i<rsmd.getColumnCount(); i++) {
-				String colName = rsmd.getColumnName(i+1);
-//				String colType = rsmd.getColumnTypeName(i+1);
-				String colClass = rsmd.getColumnClassName(i+1);
+			for (int i = 0; i < rsmd.getColumnCount(); i++) {
+				String colName = rsmd.getColumnName(i + 1);
+				// String colType = rsmd.getColumnTypeName(i+1);
+				String colClass = rsmd.getColumnClassName(i + 1);
 				sb.append(String.format(fieldFormat, colClass, colName));
 				if (colClass.equals("java.lang.Boolean") || colClass.equals("boolean"))
-					sbmethod.append(String.format(bmethodFormat, colClass, MyStringUtils.upperFirstLetter(colName), colName, className, MyStringUtils.upperFirstLetter(colName), colClass, colName));
+					sbmethod.append(String.format(bmethodFormat, colClass, MyStringUtils.upperFirstLetter(colName),
+							colName, className, MyStringUtils.upperFirstLetter(colName), colClass, colName));
 				else
-					sbmethod.append(String.format(nmethodFormat, colClass, MyStringUtils.upperFirstLetter(colName), colName, className, MyStringUtils.upperFirstLetter(colName), colClass, colName));
+					sbmethod.append(String.format(nmethodFormat, colClass, MyStringUtils.upperFirstLetter(colName),
+							colName, className, MyStringUtils.upperFirstLetter(colName), colClass, colName));
 
-				//				sb.append("	private "+ colClass +" "+colName+";\n");
-//				sbmetod.append("	public "+colClass+ "get"+MyStringUtils.upperFirstLetter(colName) + "() {\n")
-//					.append("		return " + colName + ";");
+				// sb.append(" private "+ colClass +" "+colName+";\n");
+				// sbmetod.append(" public "+colClass+
+				// "get"+MyStringUtils.upperFirstLetter(colName) + "() {\n")
+				// .append(" return " + colName + ";");
 			}
 			sb.append("\n");
 			sb.append(sbmethod.toString());
@@ -100,13 +103,12 @@ public abstract class MyDbUtils {
 			MyDbUtils.closeResultSet(rs);
 			MyDbUtils.closePreparedStatement(pstmt);
 		}
-		
+
 		sb.append("}\n");
-		
+
 		return sb.toString();
 	}
 
-	
 	/**
 	 * 执行update或者insert
 	 * 
@@ -192,6 +194,7 @@ public abstract class MyDbUtils {
 
 	/**
 	 * 关闭数据库
+	 * 
 	 * @param conn
 	 */
 	public static void closeConn(Connection conn) {
@@ -211,6 +214,7 @@ public abstract class MyDbUtils {
 
 	/**
 	 * 关闭PreparedStatement
+	 * 
 	 * @param pstmt
 	 */
 	public static void closePreparedStatement(PreparedStatement pstmt) {
@@ -227,6 +231,7 @@ public abstract class MyDbUtils {
 
 	/**
 	 * 关闭ResultSet
+	 * 
 	 * @param rs
 	 */
 	public static void closeResultSet(ResultSet rs) {
@@ -242,6 +247,7 @@ public abstract class MyDbUtils {
 
 	/**
 	 * 关闭CallableStatement
+	 * 
 	 * @param cs
 	 */
 	public static void closeCallableStatement(CallableStatement cs) {
@@ -258,6 +264,7 @@ public abstract class MyDbUtils {
 
 	/**
 	 * 获取行数据
+	 * 
 	 * @param sql
 	 * @param conn
 	 * @param params
@@ -292,7 +299,7 @@ public abstract class MyDbUtils {
 			rs = ps.executeQuery();
 			rsmd = rs.getMetaData();
 			int colNums = rsmd.getColumnCount();
-			
+
 			if (rs.next()) {
 				resultObject = clazz.newInstance();
 				for (int i = 0; i < colNums; i++) {
@@ -318,9 +325,10 @@ public abstract class MyDbUtils {
 
 		return resultObject;
 	}
-	
+
 	/**
 	 * 获取所有行数据
+	 * 
 	 * @param sql
 	 * @param conn
 	 * @param params
@@ -357,12 +365,13 @@ public abstract class MyDbUtils {
 			rsmd = rs.getMetaData();
 			int colNums = rsmd.getColumnCount();
 			Map<String, java.lang.reflect.Field> fs = new HashMap<String, java.lang.reflect.Field>();
-			for (int k=0; k<colNums; k++) {
+			for (int k = 0; k < colNums; k++) {
 				try {
-					java.lang.reflect.Field field = MyReflectCache.getInstance().getReflectField(clazz, rsmd.getColumnName(k+1));
-					if (field==null)
-						field = clazz.getDeclaredField(rsmd.getColumnName(k+1));
-					fs.put(rsmd.getColumnName(k+1), field);
+					java.lang.reflect.Field field = MyReflectCache.getInstance().getReflectField(clazz,
+							rsmd.getColumnName(k + 1));
+					if (field == null)
+						field = clazz.getDeclaredField(rsmd.getColumnName(k + 1));
+					fs.put(rsmd.getColumnName(k + 1), field);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -375,7 +384,7 @@ public abstract class MyDbUtils {
 					java.lang.reflect.Field field;
 					try {
 						field = fs.get(colName);
-						field.setAccessible(true); 
+						field.setAccessible(true);
 						field.set(resultObject, colValue);
 					} catch (Exception e) {
 
@@ -406,25 +415,25 @@ public abstract class MyDbUtils {
 		}
 	}
 
-		
 	public static void main(String[] args) {
-		
-		class TestClass {
-			public long numCount;
-			public String vc2Count;
-		}
-		List<TestClass> c = null;
+
+//		class TestClass {
+//			public long numCount;
+//			public String vc2Count;
+//		}
+//		List<TestClass> c = null;
 		Connection db = null;
 		try {
 			MySqlDbConn con = new MySqlDbConn();
 			con.setMysqlDs("").setMysqlUrl("jdbc:mysql://127.0.0.1:3306/wx?generateSimpleParameterMetadata=true")
-				.setMysqlPassword("Mynormal12#").setMysqlUser("wxuser");
+					.setMysqlPassword("Mynormal12#").setMysqlUser("wxuser");
 			db = con.getMysqlConnection();
 			String a = MyDbUtils.genBO(db, "wx_received_msg", "net.linvx.java.wx.bo", "BoReceivedMsg");
 			System.out.println(a);
-//			c = MyDbUtils.getAll(db,
-//					"select count(*) as numCount, Cast(count(*) as char) as vc2Count from wx_official_account_info where numAccountId=?",
-//					new Object[] { new Integer(1) }, TestClass.class);
+			// c = MyDbUtils.getAll(db,
+			// "select count(*) as numCount, Cast(count(*) as char) as vc2Count
+			// from wx_official_account_info where numAccountId=?",
+			// new Object[] { new Integer(1) }, TestClass.class);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -440,7 +449,7 @@ public abstract class MyDbUtils {
 		} finally {
 			MyDbUtils.closeConn(db);
 		}
-		//System.out.println(c.get(0).numCount + "   " + c.get(0).vc2Count);
+		// System.out.println(c.get(0).numCount + " " + c.get(0).vc2Count);
 	}
 
 }

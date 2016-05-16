@@ -12,7 +12,9 @@ import javax.sql.DataSource;
 import net.linvx.java.libs.utils.MyStringUtils;
 
 /**
- * mysql数据源（数据库连接），如果有ds，则从ds取，否则，直接建立简单连接。本class基本用不到，可以是用MyDbHelper即可。MyDbHelper从配置文件建立连接池
+ * mysql数据源（数据库连接），如果有ds，则从ds取，否则，直接建立简单连接。本class基本用不到，可以是用MyDbHelper即可。
+ * MyDbHelper从配置文件建立连接池
+ * 
  * @author lizelin
  *
  */
@@ -23,7 +25,7 @@ public class MySqlDbConn {
 	private String mysql_password = "";
 
 	private DataSource dataSource = null;
-	
+
 	public MySqlDbConn() {
 
 	}
@@ -75,7 +77,7 @@ public class MySqlDbConn {
 	}
 
 	private java.sql.Connection getMysqlConnectionByContext() throws NamingException, SQLException {
-		
+
 		if (dataSource == null) {
 			// 初始化查找命名空间
 			Context ctx = new InitialContext();

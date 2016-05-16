@@ -4,16 +4,15 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.log4j.Logger;
 
 import net.linvx.java.libs.tools.CommonAssistant;
 import net.linvx.java.libs.tools.MyLog;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
  * 读取配置文件，使用到了commons-configuration-1.10.jar
@@ -24,10 +23,11 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 public class MyConfigReader {
 	private MyConfigReader() {
 	}
+
 	private static Logger log = MyLog.getLogger(MyConfigReader.class);
 	private static FileChangedReloadingStrategy strategy = null;
 	private static Map<String, Configuration> configs = new HashMap<String, Configuration>();
-	
+
 	static {
 		strategy = new FileChangedReloadingStrategy();
 		strategy.setRefreshDelay(60 * 1000);
