@@ -14,7 +14,7 @@ import java.util.Map;
 import javax.naming.NamingException;
 
 import net.linvx.java.libs.enhance.BaseBean;
-import net.linvx.java.libs.enhance.MyOrmHelper;
+import net.linvx.java.libs.enhance.MyReflectCache;
 
 public abstract class MyDbUtils {
 	public static <T> T getOne(Connection conn, String sql) throws Exception {
@@ -285,7 +285,7 @@ public abstract class MyDbUtils {
 					Object colValue = rs.getObject(colName);
 					java.lang.reflect.Field field;
 					try {
-						field = MyOrmHelper.getInstance().getReflectField(clazz, colName);
+						field = MyReflectCache.getInstance().getReflectField(clazz, colName);
 						if (field == null) {
 							field = clazz.getDeclaredField(colName);
 						}
@@ -344,7 +344,7 @@ public abstract class MyDbUtils {
 			Map<String, java.lang.reflect.Field> fs = new HashMap<String, java.lang.reflect.Field>();
 			for (int k=0; k<colNums; k++) {
 				try {
-					java.lang.reflect.Field field = MyOrmHelper.getInstance().getReflectField(clazz, rsmd.getColumnName(k+1));
+					java.lang.reflect.Field field = MyReflectCache.getInstance().getReflectField(clazz, rsmd.getColumnName(k+1));
 					if (field==null)
 						field = clazz.getDeclaredField(rsmd.getColumnName(k+1));
 					fs.put(rsmd.getColumnName(k+1), field);

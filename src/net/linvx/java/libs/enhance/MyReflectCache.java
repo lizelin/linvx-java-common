@@ -3,21 +3,21 @@ package net.linvx.java.libs.enhance;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-public class MyOrmHelper {
-	private static MyOrmHelper instance = null;
+public class MyReflectCache {
+	private static MyReflectCache instance = null;
 	
-	public static MyOrmHelper getInstance() {
+	public static MyReflectCache getInstance() {
 		if (instance == null) {
-			synchronized (MyOrmHelper.class) {
+			synchronized (MyReflectCache.class) {
 				if (instance == null) {
-					instance = new MyOrmHelper();
+					instance = new MyReflectCache();
 				}
 			}
 		}
 		return instance;
 	}
 	
-	private MyOrmHelper() {
+	private MyReflectCache() {
 		
 	}
 	
