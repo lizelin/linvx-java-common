@@ -10,7 +10,7 @@ public class BaseBean {
 	}
 	
 	public JSONObject toJson() {
-		return MyReflectUtils.toJson(this, false, true);
+		return MyReflectUtils.toJson(this, false, false);
 	}
 	
 }
