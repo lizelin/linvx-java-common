@@ -1,5 +1,8 @@
 package net.linvx.java.libs.tools;
 
+import java.io.File;
+import java.io.IOException;
+
 import net.linvx.java.libs.http.HttpHelper;
 import net.linvx.java.libs.utils.MyStringUtils;
 import net.sf.json.JSONObject;
@@ -72,8 +75,27 @@ public class WebTools {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(WebTools.ip2CityJson("113.108.161.218"));
-		System.out.println(WebTools.ip2CityName("123.120.199.216"));
+		System.out.println(WebTools.ip2CityName("202.106.0.20"));
+	}
+	
+	/**
+	 * 合并文件
+	 * @param urls
+	 * @param destFile
+	 */
+	public static void mergeFiles(String[] urls, String destFile) {
+		StringBuffer sb = new StringBuffer();
+		for (String url: urls ) {
+			String part = HttpHelper.httpGet(url);
+			sb.append(part);
+			sb.append("\n");
+		}
+		File file = new File(destFile);
+		try {
+			org.apache.commons.io.FileUtils.writeStringToFile(file, sb.toString(), "UTF-8");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
