@@ -18,6 +18,7 @@ import net.linvx.java.libs.utils.MyStringUtils;
  * @author lizelin
  *
  */
+@Deprecated
 public class MySqlDbConn {
 	private String mysql_ds = "";
 	private String mysql_url = "";

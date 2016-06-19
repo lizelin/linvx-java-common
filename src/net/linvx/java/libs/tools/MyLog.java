@@ -8,8 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 /**
  * Log4J的简单wrapper
- * 
- * @author lizelin 用到了jar包：log4j-1.2.14.jar 主要是指定了log4j的配置文件名称和路径
+ * 用到了jar包：log4j-1.2.14.jar 主要是指定了log4j的配置文件名称和路径
  *         （在根下[即和顶层包同一路径]，文件名log4j.properties）
  *         注意：log4j.properties文件中的log4f.logger.net.linvx的net.linvx实际上有过滤器的作用
  *         log4j.properties文件示例：
@@ -33,6 +32,7 @@ import org.apache.log4j.PropertyConfigurator;
  *         log4j.appender.WEB.layout.ConversionPattern=[%p] %-d{yy-MM-dd
  *         HH:mm:ss} [%c : %L] %m%n
  *
+ * @author lizelin 
  * 
  */
 public class MyLog {

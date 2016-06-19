@@ -46,14 +46,14 @@ public abstract class MyDbUtils {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			MyDbUtils.closeResultSet(rs);
-			MyDbUtils.closePreparedStatement(pst);
+			MyDbUtils.closeQuietly(rs);
+			MyDbUtils.closeQuietly(pst);
 		}
 		return ret;
 	}
 
 	/**
-	 * 生成BO
+	 * 生成PO
 	 * 
 	 * @param db
 	 * @param table
@@ -61,7 +61,7 @@ public abstract class MyDbUtils {
 	 * @param className
 	 * @return
 	 */
-	public static String genBO(Connection db, String table, String packageName, String className) {
+	public static String genPO(Connection db, String table, String packageName, String className) {
 		StringBuffer sb = new StringBuffer();
 		StringBuffer sbmethod = new StringBuffer();
 		String fieldFormat = "\tprivate %s %s;\n";
@@ -100,8 +100,8 @@ public abstract class MyDbUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			MyDbUtils.closeResultSet(rs);
-			MyDbUtils.closePreparedStatement(pstmt);
+			MyDbUtils.closeQuietly(rs);
+			MyDbUtils.closeQuietly(pstmt);
 		}
 
 		sb.append("}\n");
@@ -142,7 +142,7 @@ public abstract class MyDbUtils {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			MyDbUtils.closePreparedStatement(pst);
+			MyDbUtils.closeQuietly(pst);
 		}
 		return ret;
 	}
@@ -186,18 +186,48 @@ public abstract class MyDbUtils {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			MyDbUtils.closeResultSet(rs);
-			MyDbUtils.closePreparedStatement(pst);
+			MyDbUtils.closeQuietly(rs);
+			MyDbUtils.closeQuietly(pst);
 		}
 		return ret;
 	}
 
 	/**
+	 * 执行insert语句,返回主键
+	 * 
+	 * @param conn
+	 * @param sql
+	 * @param vs
+	 *            参数数组
+	 * @throws Exception
+	 * @return 插入的行数，-1代表未插入成功
+	 */
+	public static int insert(Connection conn, String sql, Object[] vs) throws Exception {
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		int ret = -1;
+		try {
+			pst = conn.prepareStatement(sql);
+			MyDbUtils.setSqlParams(pst, vs);
+			ret = pst.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			MyDbUtils.closeQuietly(rs);
+			MyDbUtils.closeQuietly(pst);
+		}
+		return ret;
+	}
+
+	
+	/**
 	 * 关闭数据库
 	 * 
 	 * @param conn
 	 */
-	public static void closeConn(Connection conn) {
+	public static void closeQuietly(Connection conn) {
 		if (conn == null)
 			return;
 		try {
@@ -217,7 +247,7 @@ public abstract class MyDbUtils {
 	 * 
 	 * @param pstmt
 	 */
-	public static void closePreparedStatement(PreparedStatement pstmt) {
+	public static void closeQuietly(PreparedStatement pstmt) {
 		if (pstmt == null)
 			return;
 		try {
@@ -229,12 +259,23 @@ public abstract class MyDbUtils {
 		pstmt = null;
 	}
 
+	public static void closeQuietly(Connection conn, PreparedStatement pstmt, ResultSet rs) {
+		MyDbUtils.closeQuietly(rs);
+		MyDbUtils.closeQuietly(pstmt);
+		MyDbUtils.closeQuietly(conn);
+	}
+	
+	public static void closeQuietly(PreparedStatement pstmt, ResultSet rs) {
+		MyDbUtils.closeQuietly(rs);
+		MyDbUtils.closeQuietly(pstmt);
+	}
+	
 	/**
 	 * 关闭ResultSet
 	 * 
 	 * @param rs
 	 */
-	public static void closeResultSet(ResultSet rs) {
+	public static void closeQuietly(ResultSet rs) {
 		if (rs == null)
 			return;
 		try {
@@ -250,7 +291,7 @@ public abstract class MyDbUtils {
 	 * 
 	 * @param cs
 	 */
-	public static void closeCallableStatement(CallableStatement cs) {
+	public static void closeQuietly(CallableStatement cs) {
 		if (cs == null)
 			return;
 		try {
@@ -319,8 +360,8 @@ public abstract class MyDbUtils {
 				}
 			}
 		} finally {
-			MyDbUtils.closeResultSet(rs);
-			MyDbUtils.closePreparedStatement(ps);
+			MyDbUtils.closeQuietly(rs);
+			MyDbUtils.closeQuietly(ps);
 		}
 
 		return resultObject;
@@ -393,8 +434,8 @@ public abstract class MyDbUtils {
 				resultObjects.add(resultObject);
 			}
 		} finally {
-			MyDbUtils.closeResultSet(rs);
-			MyDbUtils.closePreparedStatement(ps);
+			MyDbUtils.closeQuietly(rs);
+			MyDbUtils.closeQuietly(ps);
 		}
 
 		return resultObjects;
@@ -428,7 +469,7 @@ public abstract class MyDbUtils {
 			con.setMysqlDs("").setMysqlUrl("jdbc:mysql://127.0.0.1:3306/wx?generateSimpleParameterMetadata=true")
 					.setMysqlPassword("Mynormal12#").setMysqlUser("wxuser");
 			db = con.getMysqlConnection();
-			String a = MyDbUtils.genBO(db, "wx_received_msg", "net.linvx.java.wx.bo", "BoReceivedMsg");
+			String a = MyDbUtils.genPO(db, "wx_received_msg", "net.linvx.java.wx.bo", "BoReceivedMsg");
 			System.out.println(a);
 			// c = MyDbUtils.getAll(db,
 			// "select count(*) as numCount, Cast(count(*) as char) as vc2Count
@@ -447,7 +488,7 @@ public abstract class MyDbUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			MyDbUtils.closeConn(db);
+			MyDbUtils.closeQuietly(db);
 		}
 		// System.out.println(c.get(0).numCount + " " + c.get(0).vc2Count);
 	}

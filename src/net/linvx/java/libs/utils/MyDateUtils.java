@@ -1,5 +1,6 @@
 package net.linvx.java.libs.utils;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -169,6 +170,14 @@ public class MyDateUtils {
                                               
         return date;  
     }  
+    
+    public static Timestamp toTimestatmp(long millis) {
+    	return new Timestamp(millis);
+    }
+    
+    public static Timestamp now() {
+    	return new Timestamp(System.currentTimeMillis());
+    }
     
     public static void main(String[] args){
     	System.out.println(stringToDate("2016-12-01 12:03:23"));
